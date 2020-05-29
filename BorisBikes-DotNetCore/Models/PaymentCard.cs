@@ -12,5 +12,18 @@ namespace BorisBikes_DotNetCore.Models
             Balance = balance;
             AccountNumber = Guid.NewGuid();
         }
+
+        public void Debit(int debitAmount)
+        {
+            Balance += debitAmount;
+        }
+
+        public void Credit(int creditAmount)
+        {
+            if (Balance - creditAmount < 0)
+                throw new Exception("Insufficient funds to make transaction");
+
+            Balance -= creditAmount;
+        }
     }
 }
