@@ -1,6 +1,7 @@
 using System;
 using BorisBikes_DotNetCore;
 using BorisBikes_DotNetCore.Models;
+using FluentAssertions;
 using Xunit;
 
 namespace BorisBikes_DotNetCore_Tests
@@ -16,6 +17,8 @@ namespace BorisBikes_DotNetCore_Tests
             var dockingStation = new DockingStation(capacity);
 
             Assert.Equal(capacity, dockingStation.BikeStore.Length);
+
+            dockingStation.BikeStore.Length.Should().Equals(capacity);
         }
 
         [Fact]
@@ -27,6 +30,8 @@ namespace BorisBikes_DotNetCore_Tests
             dockingStation.DockBike(bike, 0);
 
             Assert.Equal(dockingStation.BikeStore[0], bike);
+
+            dockingStation.BikeStore[0].Should().Equals(bike);
         }
 
         [Fact]
@@ -36,14 +41,20 @@ namespace BorisBikes_DotNetCore_Tests
             var dockingStation = new DockingStation(0);
 
             Assert.Throws<Exception>(() => dockingStation.DockBike(bike, 0));
+
+            Action action = () => dockingStation.DockBike(bike, 0);
+            action.Should().Throw<Exception>().WithMessage("No space exists");
         }
 
         [Fact]
         public void DockingStation_DockBike_ShouldThrowException_WhennTheBikeIsNotValid()
         {
-            var dockingStation = new DockingStation(0);
+            var dockingStation = new DockingStation(1);
 
             Assert.Throws<Exception>(() => dockingStation.DockBike(null, 0));
+
+            Action action = () => dockingStation.DockBike(null, 0);
+            action.Should().Throw<Exception>().WithMessage("Null is not a valid bike");
         }
 
         [Fact]
@@ -55,6 +66,9 @@ namespace BorisBikes_DotNetCore_Tests
             dockingStation.DockBike(bike1, 0);
 
             Assert.Throws<Exception>(() => dockingStation.DockBike(bike2, 0));
+
+            Action action = () => dockingStation.DockBike(bike2, 0);
+            action.Should().Throw<Exception>().WithMessage("Space is taken. MUPPET!");
         }
 
         [Fact]
@@ -70,6 +84,9 @@ namespace BorisBikes_DotNetCore_Tests
 
             Assert.Null(dockingStation.BikeStore[0]);
             Assert.Equal(bike, acquiredBike);
+
+            dockingStation.BikeStore[0].Should().Equals(null);
+            bike.Should().Equals(acquiredBike);
         }
 
         [Fact]
@@ -78,6 +95,9 @@ namespace BorisBikes_DotNetCore_Tests
             var dockingStation = new DockingStation(0);
 
             Assert.Throws<Exception>(() => dockingStation.ReleaseBike(0));
+
+            Action action = () => dockingStation.ReleaseBike(0);
+            action.Should().Throw<Exception>().WithMessage("Station is empty");
         }
 
         [Fact]
@@ -86,6 +106,9 @@ namespace BorisBikes_DotNetCore_Tests
             var dockingStation = new DockingStation(1);
 
             Assert.Throws<Exception>(() => dockingStation.ReleaseBike(0));
+
+            Action action = () => dockingStation.ReleaseBike(0);
+            action.Should().Throw<Exception>().WithMessage("Enjoy your AirBike Ride!");
         }
 
         [Fact]
@@ -97,9 +120,13 @@ namespace BorisBikes_DotNetCore_Tests
 
             Assert.True(bike.Working);
 
+            bike.Working.Should().Equals(true);
+
             dockingStation.ReportBroken(0);
 
             Assert.False(bike.Working);
+
+            bike.Working.Should().Equals(false);
         }
     }
 }
